@@ -31,7 +31,7 @@ getBasinLabels <- function(efficientSets, gradients, gridSize, nDim) {
 #' @param gridSize The side length of the grid.
 #' @param nDim The number of dimensions in the decision space.
 #' @export
-getEfficientSets <- function(efficientPoints, gridSize, nDim) {
-    .Call(`_ABSE_getEfficientSets`, efficientPoints, gridSize, nDim)
+getEfficientSets <- function(efficientPoints, gridSize, nDim, domSort = FALSE, rank = as.numeric( c()), nRank = 0L) {
+    .Call(`_ABSE_getEfficientSets`, efficientPoints, gridSize, nDim, domSort, rank, nRank)
 }
 

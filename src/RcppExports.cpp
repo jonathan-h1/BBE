@@ -41,15 +41,18 @@ BEGIN_RCPP
 END_RCPP
 }
 // getEfficientSets
-List getEfficientSets(NumericVector efficientPoints, int gridSize, int nDim);
-RcppExport SEXP _ABSE_getEfficientSets(SEXP efficientPointsSEXP, SEXP gridSizeSEXP, SEXP nDimSEXP) {
+List getEfficientSets(NumericVector efficientPoints, int gridSize, int nDim, bool domSort, NumericVector rank, int nRank);
+RcppExport SEXP _ABSE_getEfficientSets(SEXP efficientPointsSEXP, SEXP gridSizeSEXP, SEXP nDimSEXP, SEXP domSortSEXP, SEXP rankSEXP, SEXP nRankSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type efficientPoints(efficientPointsSEXP);
     Rcpp::traits::input_parameter< int >::type gridSize(gridSizeSEXP);
     Rcpp::traits::input_parameter< int >::type nDim(nDimSEXP);
-    rcpp_result_gen = Rcpp::wrap(getEfficientSets(efficientPoints, gridSize, nDim));
+    Rcpp::traits::input_parameter< bool >::type domSort(domSortSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rank(rankSEXP);
+    Rcpp::traits::input_parameter< int >::type nRank(nRankSEXP);
+    rcpp_result_gen = Rcpp::wrap(getEfficientSets(efficientPoints, gridSize, nDim, domSort, rank, nRank));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -57,7 +60,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_ABSE_filterByBasin", (DL_FUNC) &_ABSE_filterByBasin, 6},
     {"_ABSE_getBasinLabels", (DL_FUNC) &_ABSE_getBasinLabels, 4},
-    {"_ABSE_getEfficientSets", (DL_FUNC) &_ABSE_getEfficientSets, 3},
+    {"_ABSE_getEfficientSets", (DL_FUNC) &_ABSE_getEfficientSets, 6},
     {NULL, NULL, 0}
 };
 

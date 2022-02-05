@@ -4,6 +4,22 @@
 #include <queue>
 using namespace Rcpp;
 
+struct domComp_t {
+ domComp_t(std::vector< std::vector<int> >& rks, int nrks) : ranks(rks), nRanks(nrks) {}
+ bool operator() (long i,long j) {
+   for(int ind = 0; ind < nRanks; ind++){
+     if(ranks[i][ind] > ranks[j][ind])
+       return true;
+     if(ranks[i][ind] < ranks[j][ind])
+       return false;
+   }
+   return (true);
+   }
+ private:
+ std::vector< std::vector<int> >& ranks;
+ int nRanks;
+};
+
 // This is a simple example of exporting a C++ function to R. You can
 // source this function into an R session using the Rcpp::sourceCpp
 // function (or via the Source button on the editor toolbar). Learn
@@ -62,8 +78,16 @@ std::vector<int> findNeighbors(
 //' @param nDim The number of dimensions in the decision space.
 //' @export
 // [[Rcpp::export]]
-List getEfficientSets(NumericVector efficientPoints, int gridSize, int nDim){
+List getEfficientSets(
+    NumericVector efficientPoints,
+    int gridSize,
+    int nDim,
+    bool domSort = false,
+    NumericVector rank = NumericVector::create(),
+    int nRank = 0
+){
   List efficientSets = List::create();
+  List tmpEfficientSets = List::create();
   int nPoints = efficientPoints.length();
   std::vector< std::vector<int> > formEffPoints(nPoints, std::vector<int>(nDim,0));
   std::vector<int> neighbors;
@@ -89,7 +113,7 @@ List getEfficientSets(NumericVector efficientPoints, int gridSize, int nDim){
     while(!ptQueue.empty()){
       curPtInd = ptQueue.front();
       ptQueue.pop();
-      efficientSet.push_back(efficientPoints[curPtInd]);
+      efficientSet.push_back(curPtInd);
       neighbors = findNeighbors(formEffPoints, formEffPoints[curPtInd], handledPts, unhandeledPt, nPoints, nDim);
       for(int neighbor : neighbors){
         ptQueue.push(neighbor);
@@ -104,6 +128,45 @@ List getEfficientSets(NumericVector efficientPoints, int gridSize, int nDim){
     efficientSet = NumericVector::create();
     unhandeledPt = findUnhandeledPt(handledPts, unhandeledPt);
   }
+
+  int nEffSets = efficientSets.length();
+
+  if(domSort){
+    tmpEfficientSets = efficientSets;
+    efficientSets = List::create();
+    std::vector<int> sortVec(nEffSets, 0);
+    std::vector< std::vector<int> > effSetRanks(nEffSets, std::vector<int>(nRank, 0));
+    for(int i = 0; i < nEffSets; i++){
+      // Rcout << i << ": ";
+      NumericVector effPoints = tmpEfficientSets[i];
+      for(auto effPoint : effPoints){
+        effSetRanks[i][rank[effPoint] - 1]++;
+        // Rcout << rank[effPoint] << ", ";
+      }
+      // Rcout << "\n";
+      sortVec[i] = i;
+    }
+
+    struct domComp_t domComp(effSetRanks, nRank);
+    std::sort(sortVec.begin(), sortVec.end(), domComp);
+
+    for(int i: sortVec){
+      Rcout << i << ", ";
+      efficientSets.push_back(tmpEfficientSets[i]);
+    }
+    Rcout << std::endl;
+
+  }
+
+  for(int i = 0; i < nEffSets; i++){
+    // Rcout << i << ": ";
+    NumericVector effPoints = efficientSets[i];
+    for(int j = 0; j < effPoints.length(); j++){
+      effPoints[j] = efficientPoints[effPoints[j]];
+      // Rcout << rank[effPoint] << ", ";
+    }
+  }
+
   return efficientSets;
 }
 
