@@ -24,12 +24,13 @@ std::vector<long> getNeighbors(long point, int gridSize, int nDim){
   long rem = point - dimInd * dimStep;
   std::vector<long> prevNeighbors = getNeighbors(rem, gridSize, nDim - 1);
   for(long i = -1; i < 2; i++){
-    if(dimInd + i <= gridSize  && dimInd + i >= 0){
+    if(dimInd + i < gridSize  && dimInd + i >= 0){
       for(long prevPoint: prevNeighbors){
         neighbors.push_back((dimInd + i) * dimStep + prevPoint);
       }
     }
   }
+  //~pervNeighbors;
   return neighbors;
 
 
@@ -37,27 +38,65 @@ std::vector<long> getNeighbors(long point, int gridSize, int nDim){
 
 void handleQueue(
     std::queue<long>& ptQueue, NumericVector& basinLabels, NumericVector& gradients,
-    int label, int gridSize, int nDim){
+    std::vector<int>& dists, int label, int gridSize, int nDim,
+    bool printLog = false){
 
   long curPoint;
   std::vector<long> neighbors;
+  bool boundary = false;
+  int dinInt;
+  long rem;
 
   while(!ptQueue.empty()){
     curPoint = ptQueue.front();
     ptQueue.pop();
-    //std::cout<< "Current Point is: " << curPoint<< std::endl << "found neighbors: "<<std::endl;
+    //rem = curPoint;
+    /*for(int i = nDim - 1; i >=0; i--){
+     dinInt = floor(rem / pow(gridSize, i));
+     if(dinInt == 0 || dinInt == (gridSize - 1)){
+     boundary = true;
+     }
+     rem -= dinInt * pow(gridSize, i);
+    }
+     if(boundary){
+     continue;
+     }*/
+    if(printLog){
+      Rcout<< "Pt: " << curPoint<< " (" << label << ") " << "-- {";
+    }
     neighbors = getNeighbors(curPoint, gridSize, nDim);
+    bool start = true;
     for(long neighbor: neighbors){
-      //std::cout<<'\t'<< neighbor;
-      if(basinLabels[neighbor] != -1 || gradients[neighbor] < gradients[curPoint]){
-        //std::cout<<std::endl;
+      if(printLog && !(start)){
+        Rcout<< ", " << neighbor <<"(";
+      }
+      if(printLog && start){
+        Rcout<< neighbor <<"(";
+        start = false;
+      }
+      if(gradients[neighbor] < gradients[curPoint]){
+        if(printLog){
+          Rcout<< "<)";
+        }
         continue;
       }
-      //std::cout<<" - labeled"<< std::endl;
+      // std::cout<< "dist point: " << dists[curPoint] << " + 1 " << (((int) dists[curPoint]) + 1) << " dist neigh " << dists[neighbor] <<std::endl;
+      if(basinLabels[neighbor] != -1 && ((((int) dists[curPoint]) + 1) >= dists[neighbor])){
+        if(printLog){
+          Rcout<<"-)";
+        }
+        continue;
+      }
+      if(printLog){
+        Rcout<<"+)";
+      }
       basinLabels[neighbor] = label;
+      dists[neighbor] = ((int) dists[curPoint]) + 1;
       ptQueue.push(neighbor);
     }
-    //std::cout<<std::endl;
+    if(printLog){
+      Rcout<< "}" << std::endl;
+    }
   }
 }
 
@@ -116,15 +155,24 @@ NumericVector getBasinLabels(List efficientSets, NumericVector gradients, int gr
   std::vector<int> handledPts(nPoints, -1);
   std::queue<long> ptQueue;
   std::vector<long> unhandeledPt;
-
+  std::vector<int> dists (nPoints, 0);
+  //std::cout<< "labeling sets" << std::endl;
   for(int set = 1; set <= nSets; set++){
+    //std::cout<< "Set: " << set << std::endl;
     curSet = efficientSets[set - 1];
     for(auto effPoint : curSet){
       ptQueue.push((long) effPoint);
       basinLabels[(long) effPoint] = set;
+      dists[(long) effPoint] = 0;
     }
-    handleQueue(ptQueue, basinLabels, gradients, set, gridSize, nDim);
+    handleQueue(ptQueue, basinLabels, gradients, dists, set, gridSize, nDim);
   }
+  // for( int i = 0; i < dists.size(); i++){
+  //   if(i % gridSize == 0) Rcout << std::endl;
+  //   Rcout << dists[i] << "";
+  // }
+  Rcout << std::endl;
+  //std::cout<< "before while" << std::endl;
   while(true){
     unhandeledPt = getUnhandeled(basinLabels, gradients, nPoints, gridSize, nDim);
     if(unhandeledPt[0] == (long) -1){
@@ -132,8 +180,15 @@ NumericVector getBasinLabels(List efficientSets, NumericVector gradients, int gr
     }
     ptQueue.push(unhandeledPt[0]);
     basinLabels[unhandeledPt[0]] = basinLabels[unhandeledPt[1]];
-    handleQueue(ptQueue, basinLabels, gradients, basinLabels[unhandeledPt[1]], gridSize, nDim);
+    dists[unhandeledPt[0]] = dists[unhandeledPt[1]] + 1;
+    handleQueue(ptQueue, basinLabels, gradients, dists, basinLabels[unhandeledPt[1]], gridSize, nDim);
   }
+
+  // for( int i = 0; i < dists.size(); i++){
+  //   if(i % gridSize == 0) Rcout << std::endl;
+  //   Rcout << dists[i] << "";
+  // }
+  Rcout << std::endl;
   return basinLabels;
 }
 

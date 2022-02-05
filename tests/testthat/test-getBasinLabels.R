@@ -50,5 +50,5 @@ sets_simple <- getEfficientSets(c(0, 1, 2, 10, 13), 4, 2)
 test_that("getBasinLabels returns the correct labels", {
   expect_equal(getBasinLabels(sets_simple, c(0,0,0,1,1,1,1,0.5,1.1,0.5,0,0.1,0.5,0,0.1,0.2), 4, 2),
                c(1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2))
-  expect_snapshot_value(getBasinLabels(sets, as.vector(less$height), 300, 2), style = 'json2')
+  expect_snapshot_value(getBasinLabels(sets_aspar, as.vector(less$height), 300, 2), style = 'json2')
 })
