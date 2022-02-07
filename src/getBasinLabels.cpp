@@ -74,14 +74,14 @@ void handleQueue(
         Rcout<< neighbor <<"(";
         start = false;
       }
-      if(gradients[neighbor] < gradients[curPoint]){
+      if(gradients(neighbor) < gradients(curPoint)){
         if(printLog){
           Rcout<< "<)";
         }
         continue;
       }
       // std::cout<< "dist point: " << dists[curPoint] << " + 1 " << (((int) dists[curPoint]) + 1) << " dist neigh " << dists[neighbor] <<std::endl;
-      if(basinLabels[neighbor] != -1 && ((((int) dists[curPoint]) + 1) >= dists[neighbor])){
+      if(basinLabels(neighbor) != -1 && ((((int) dists.at(curPoint)) + 1) >= dists.at(curPoint))){
         if(printLog){
           Rcout<<"-)";
         }
@@ -90,8 +90,8 @@ void handleQueue(
       if(printLog){
         Rcout<<"+)";
       }
-      basinLabels[neighbor] = label;
-      dists[neighbor] = ((int) dists[curPoint]) + 1;
+      basinLabels(neighbor) = label;
+      dists.at(neighbor) = ((int) dists.at(curPoint)) + 1;
       ptQueue.push(neighbor);
     }
     if(printLog){
@@ -115,11 +115,11 @@ std::vector<long> getUnhandeled(NumericVector& basinLabels, NumericVector& gradi
   long ptSmallestNeigh;
 
   for(long i = 0; i < nPoints; i++){
-    if(basinLabels[i] == -1){
+    if(basinLabels(i) == -1){
       neighbors = getNeighbors(i, gridSize, nDim);
       for(long neighbor: neighbors){
-        if(basinLabels[neighbor] != -1 && gradients[neighbor] < smallestNeighGrad){
-          smallestNeighGrad = gradients[neighbor];
+        if(basinLabels(neighbor) != -1 && gradients(neighbor) < smallestNeighGrad){
+          smallestNeighGrad = gradients(neighbor);
           ptwSmallestNeigh = i;
           ptSmallestNeigh = neighbor;
         }
@@ -143,7 +143,6 @@ std::vector<long> getUnhandeled(NumericVector& basinLabels, NumericVector& gradi
 //' @param gradients A vector containing the accumulated gradients for every point in the grid.
 //' @param gridSize The side length of the grid.
 //' @param nDim The number of dimensions in the decision space.
-//' @export
 // [[Rcpp::export]]
 NumericVector getBasinLabels(List efficientSets, NumericVector gradients, int gridSize, int nDim){
 
@@ -159,11 +158,11 @@ NumericVector getBasinLabels(List efficientSets, NumericVector gradients, int gr
   //std::cout<< "labeling sets" << std::endl;
   for(int set = 1; set <= nSets; set++){
     //std::cout<< "Set: " << set << std::endl;
-    curSet = efficientSets[set - 1];
+    curSet = efficientSets(set - 1);
     for(auto effPoint : curSet){
-      ptQueue.push((long) effPoint);
-      basinLabels[(long) effPoint] = set;
-      dists[(long) effPoint] = 0;
+      ptQueue.push((long) effPoint - 1);
+      basinLabels((long) effPoint - 1) = set;
+      dists.at((long) effPoint - 1) = 0;
     }
     handleQueue(ptQueue, basinLabels, gradients, dists, set, gridSize, nDim);
   }
@@ -171,24 +170,24 @@ NumericVector getBasinLabels(List efficientSets, NumericVector gradients, int gr
   //   if(i % gridSize == 0) Rcout << std::endl;
   //   Rcout << dists[i] << "";
   // }
-  Rcout << std::endl;
+  // Rcout << std::endl;
   //std::cout<< "before while" << std::endl;
   while(true){
     unhandeledPt = getUnhandeled(basinLabels, gradients, nPoints, gridSize, nDim);
-    if(unhandeledPt[0] == (long) -1){
+    if(unhandeledPt.at(0) == (long) -1){
       break;
     }
     ptQueue.push(unhandeledPt[0]);
-    basinLabels[unhandeledPt[0]] = basinLabels[unhandeledPt[1]];
-    dists[unhandeledPt[0]] = dists[unhandeledPt[1]] + 1;
-    handleQueue(ptQueue, basinLabels, gradients, dists, basinLabels[unhandeledPt[1]], gridSize, nDim);
+    basinLabels(unhandeledPt[0]) = basinLabels(unhandeledPt[1]);
+    dists.at(unhandeledPt[0]) = dists.at(unhandeledPt[1]) + 1;
+    handleQueue(ptQueue, basinLabels, gradients, dists, basinLabels(unhandeledPt[1]), gridSize, nDim);
   }
 
   // for( int i = 0; i < dists.size(); i++){
   //   if(i % gridSize == 0) Rcout << std::endl;
   //   Rcout << dists[i] << "";
   // }
-  Rcout << std::endl;
+  // Rcout << std::endl;
   return basinLabels;
 }
 

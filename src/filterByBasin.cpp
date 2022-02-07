@@ -14,13 +14,12 @@ using namespace Rcpp;
 //' @param nBasins The number of unique labels in [`basinLabels`].
 //' @param gridSize The side length of the grid.
 //' @param nDim The number of dimensions in the decision space.
-//' @export
 // [[Rcpp::export]]
-DataFrame filterByBasin(DataFrame solutions, NumericVector basinLabels, NumericVector boudaries,
+NumericVector filterByBasin(DataFrame solutions, NumericVector basinLabels, NumericVector boudaries,
                    int nBasins, int gridSize, int nDim){
 
   int nSolutions = solutions.nrow();
-  NumericVector solutionLabels (nSolutions);
+  NumericVector solutionLabels(nSolutions);
   // for(int i = 0; i < nBasins; i++){
   //   filteredSolutions.push_back(NumericVector::create());
   // }
@@ -30,8 +29,8 @@ DataFrame filterByBasin(DataFrame solutions, NumericVector basinLabels, NumericV
   minAndStep.reserve(nDim * 2);
   for (int dim = 0; dim < nDim; ++dim)
   {
-    minAndStep.push_back((double) boudaries[dim * 2]);
-    minAndStep.push_back((double) ((boudaries[dim * 2 + 1] - boudaries[dim * 2]) / gridSize));
+    minAndStep.push_back((double) boudaries(dim * 2));
+    minAndStep.push_back((double) ((boudaries(dim * 2 + 1) - boudaries(dim * 2)) / gridSize));
   }
 
 
@@ -41,7 +40,7 @@ DataFrame filterByBasin(DataFrame solutions, NumericVector basinLabels, NumericV
     for (int dim = 0; dim < nDim; ++dim)
     {
       dimVals = solutions[dim];
-      int dInd = (int) floor((dimVals[i] - minAndStep[dim * 2]) / minAndStep[dim * 2 + 1]);
+      int dInd = (int) floor((dimVals(i) - minAndStep.at(dim * 2)) / minAndStep.at(dim * 2 + 1));
       if(dInd == gridSize){
         dInd--;
       }
@@ -49,12 +48,11 @@ DataFrame filterByBasin(DataFrame solutions, NumericVector basinLabels, NumericV
     }
     // std::cout<<"Index: "<< index<<std::endl;
 
-    label = basinLabels[index];
+    label = basinLabels(index);
     // std::cout<<"Label: "<<label<<std::endl;
-    solutionLabels[i] = label;
+    solutionLabels(i) = label;
   }
-  solutions.push_back(solutionLabels);
-  return solutions;
+  return solutionLabels;
 }
 
 

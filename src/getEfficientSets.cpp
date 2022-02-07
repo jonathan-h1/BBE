@@ -8,9 +8,9 @@ struct domComp_t {
  domComp_t(std::vector< std::vector<int> >& rks, int nrks) : ranks(rks), nRanks(nrks) {}
  bool operator() (long i,long j) {
    for(int ind = 0; ind < nRanks; ind++){
-     if(ranks[i][ind] > ranks[j][ind])
+     if(ranks.at(i).at(ind) > ranks.at(j).at(ind))
        return true;
-     if(ranks[i][ind] < ranks[j][ind])
+     if(ranks.at(i).at(ind) < ranks.at(j).at(ind))
        return false;
    }
    return (true);
@@ -33,7 +33,7 @@ int findUnhandeledPt(std::vector<int> handledPts, int start = 0){
   int nPoints = handledPts.size();
   int unhandeledPt = -1;
   for(int i = start; i < nPoints; i++){
-    if(handledPts[i] == -1){
+    if(handledPts.at(i) == -1){
       unhandeledPt = i;
       break;
     }
@@ -50,13 +50,13 @@ std::vector<int> findNeighbors(
   bool isNeighbor;
 
   for(int i = start; i < nPoints; i++){
-    if(handledPts[i] != -1){
+    if(handledPts.at(i) != -1){
       continue;
     }
-    curPt = efficientPoints[i];
+    curPt = efficientPoints.at(i);
     isNeighbor = true;
     for(int d = nDim - 1; d >= 0; d--){
-      if(abs(curPt[d] - point[d]) > 1){
+      if(abs(curPt.at(d) - point.at(d)) > 1){
         isNeighbor = false;
         break;
       }
@@ -64,7 +64,7 @@ std::vector<int> findNeighbors(
     if(isNeighbor){
       neighbors.push_back(i);
     }
-    if((curPt[nDim - 1] - point[nDim - 1]) > 1){
+    if((curPt.at(nDim - 1) - point.at(nDim - 1)) > 1){
       break;
     }
   }
@@ -76,7 +76,6 @@ std::vector<int> findNeighbors(
 //' @param efficientPoints The vector containing the indices of all efficient points.
 //' @param gridSize The side length of the grid.
 //' @param nDim The number of dimensions in the decision space.
-//' @export
 // [[Rcpp::export]]
 List getEfficientSets(
     NumericVector efficientPoints,
@@ -84,7 +83,8 @@ List getEfficientSets(
     int nDim,
     bool domSort = false,
     NumericVector rank = NumericVector::create(),
-    int nRank = 0
+    int nRank = 0,
+    bool joinFronts = false
 ){
   List efficientSets = List::create();
   List tmpEfficientSets = List::create();
@@ -99,25 +99,25 @@ List getEfficientSets(
 
   long rem;
   for(int i = 0; i < nPoints; i++){
-    rem = (long) efficientPoints[i];
+    rem = (long) efficientPoints(i) - 1;
     for(int d = nDim - 1; d >= 0; d--){
-      formEffPoints[i][d] = (int) floor(rem / pow(gridSize, d));
-      rem -= (long) formEffPoints[i][d] * pow(gridSize, d);
+      formEffPoints.at(i).at(d) = (int) floor(rem / pow(gridSize, d));
+      rem -= (long) formEffPoints.at(i).at(d) * pow(gridSize, d);
     }
   }
 
   while(unhandeledPt != -1){
-    handledPts[unhandeledPt] = unhandeledPt;
+    handledPts.at(unhandeledPt) = unhandeledPt;
     ptQueue.push(unhandeledPt);
 
     while(!ptQueue.empty()){
       curPtInd = ptQueue.front();
       ptQueue.pop();
       efficientSet.push_back(curPtInd);
-      neighbors = findNeighbors(formEffPoints, formEffPoints[curPtInd], handledPts, unhandeledPt, nPoints, nDim);
+      neighbors = findNeighbors(formEffPoints, formEffPoints.at(curPtInd), handledPts, unhandeledPt, nPoints, nDim);
       for(int neighbor : neighbors){
         ptQueue.push(neighbor);
-        handledPts[neighbor] = neighbor;
+        handledPts.at(neighbor) = neighbor;
       }
 
     }
@@ -130,39 +130,72 @@ List getEfficientSets(
   }
 
   int nEffSets = efficientSets.length();
+  std::vector<int> sortVec(nEffSets, 0);
+  std::vector< std::vector<int> > effSetRanks(nEffSets, std::vector<int>(nRank, 0));
 
   if(domSort){
     tmpEfficientSets = efficientSets;
     efficientSets = List::create();
-    std::vector<int> sortVec(nEffSets, 0);
-    std::vector< std::vector<int> > effSetRanks(nEffSets, std::vector<int>(nRank, 0));
     for(int i = 0; i < nEffSets; i++){
       // Rcout << i << ": ";
-      NumericVector effPoints = tmpEfficientSets[i];
+      NumericVector effPoints = tmpEfficientSets(i);
       for(auto effPoint : effPoints){
-        effSetRanks[i][rank[effPoint] - 1]++;
+        effSetRanks.at(i).at(rank(effPoint) - 1)++;
         // Rcout << rank[effPoint] << ", ";
       }
       // Rcout << "\n";
-      sortVec[i] = i;
+      sortVec.at(i) = i;
     }
 
     struct domComp_t domComp(effSetRanks, nRank);
     std::sort(sortVec.begin(), sortVec.end(), domComp);
 
-    for(int i: sortVec){
-      Rcout << i << ", ";
-      efficientSets.push_back(tmpEfficientSets[i]);
+    if(!joinFronts){
+      for(int i: sortVec){
+        // Rcout << i << ", ";
+        efficientSets.push_back(tmpEfficientSets(i));
+      }
+      // Rcout << std::endl;
     }
-    Rcout << std::endl;
 
   }
 
-  for(int i = 0; i < nEffSets; i++){
+  if(joinFronts && domSort){
+    efficientSets = List::create();
+    int currentLayer = 0;
+    int start = 0;
+    std::vector<int> front;
+    front.reserve(nRank);
+    std::vector<int>::iterator it;
+
+    for(int effSetInd = 0; effSetInd < nEffSets; effSetInd++){
+      if(effSetRanks.at(sortVec.at(effSetInd)).at(currentLayer) > 0){
+        front.push_back(sortVec.at(effSetInd));
+      }
+      else if(front.empty()){
+        currentLayer++;
+        effSetInd--;
+      } else {
+        currentLayer++;
+        effSetInd--;
+        std::vector<int> joinedVec;
+        joinedVec.reserve((int) ((nPoints / nEffSets) * 2 * front.size()));
+        for(int i : front){
+          efficientSet = tmpEfficientSets(i);
+          joinedVec.insert(joinedVec.begin(), efficientSet.begin(), efficientSet.end());
+        }
+        front.clear();
+        efficientSet.assign(joinedVec.begin(), joinedVec.end());
+        efficientSets.push_back(efficientSet);
+      }
+    }
+  }
+
+  for(int i = 0; i < efficientSets.size(); i++){
     // Rcout << i << ": ";
-    NumericVector effPoints = efficientSets[i];
+    NumericVector effPoints = efficientSets(i);
     for(int j = 0; j < effPoints.length(); j++){
-      effPoints[j] = efficientPoints[effPoints[j]];
+      effPoints(j) = efficientPoints(effPoints(j));
       // Rcout << rank[effPoint] << ", ";
     }
   }

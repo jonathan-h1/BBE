@@ -11,7 +11,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // filterByBasin
-DataFrame filterByBasin(DataFrame solutions, NumericVector basinLabels, NumericVector boudaries, int nBasins, int gridSize, int nDim);
+NumericVector filterByBasin(DataFrame solutions, NumericVector basinLabels, NumericVector boudaries, int nBasins, int gridSize, int nDim);
 RcppExport SEXP _ABSE_filterByBasin(SEXP solutionsSEXP, SEXP basinLabelsSEXP, SEXP boudariesSEXP, SEXP nBasinsSEXP, SEXP gridSizeSEXP, SEXP nDimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -41,8 +41,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // getEfficientSets
-List getEfficientSets(NumericVector efficientPoints, int gridSize, int nDim, bool domSort, NumericVector rank, int nRank);
-RcppExport SEXP _ABSE_getEfficientSets(SEXP efficientPointsSEXP, SEXP gridSizeSEXP, SEXP nDimSEXP, SEXP domSortSEXP, SEXP rankSEXP, SEXP nRankSEXP) {
+List getEfficientSets(NumericVector efficientPoints, int gridSize, int nDim, bool domSort, NumericVector rank, int nRank, bool joinFronts);
+RcppExport SEXP _ABSE_getEfficientSets(SEXP efficientPointsSEXP, SEXP gridSizeSEXP, SEXP nDimSEXP, SEXP domSortSEXP, SEXP rankSEXP, SEXP nRankSEXP, SEXP joinFrontsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -52,7 +52,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type domSort(domSortSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type rank(rankSEXP);
     Rcpp::traits::input_parameter< int >::type nRank(nRankSEXP);
-    rcpp_result_gen = Rcpp::wrap(getEfficientSets(efficientPoints, gridSize, nDim, domSort, rank, nRank));
+    Rcpp::traits::input_parameter< bool >::type joinFronts(joinFrontsSEXP);
+    rcpp_result_gen = Rcpp::wrap(getEfficientSets(efficientPoints, gridSize, nDim, domSort, rank, nRank, joinFronts));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -60,7 +61,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_ABSE_filterByBasin", (DL_FUNC) &_ABSE_filterByBasin, 6},
     {"_ABSE_getBasinLabels", (DL_FUNC) &_ABSE_getBasinLabels, 4},
-    {"_ABSE_getEfficientSets", (DL_FUNC) &_ABSE_getEfficientSets, 6},
+    {"_ABSE_getEfficientSets", (DL_FUNC) &_ABSE_getEfficientSets, 7},
     {NULL, NULL, 0}
 };
 
