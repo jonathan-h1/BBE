@@ -146,6 +146,8 @@ std::vector<long> getUnhandeled(NumericVector& basinLabels, NumericVector& gradi
 // [[Rcpp::export]]
 NumericVector getBasinLabels(List efficientSets, NumericVector gradients, int gridSize, int nDim){
 
+  Rcout << "Computing basin labels ... \n";
+
   long nPoints = (long) pow(gridSize, nDim);
   NumericVector basinLabels (nPoints, -1);
   int nSets = efficientSets.size();

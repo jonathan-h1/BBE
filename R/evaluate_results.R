@@ -100,16 +100,15 @@ evalutate_results = function(results, fn, ...,
     less <- localEfficientSetSkeleton(design, gradients, divergence, integration = "fast")
 
     if(is.null(efficient_sets)){
-      print('Computing efficient sets')
+      # print('Computing efficient sets')
       nonDomSort <- ecr::doNondominatedSorting(t(design$obj.space[less$sinks, ]))
-
       design$efficientSets <- getEfficientSets(less$sinks, grid_size, nDim,
-                                               domSort = TRUE, nondomsort$ranks, length(unique(nondomsort$ranks)),
+                                               domSort = TRUE, nonDomSort$ranks, length(unique(nonDomSort$ranks)),
                                                joinFronts = join_fronts)
     } else {
       design$efficientSets <- efficient_sets
     }
-    print('Computing basin labels')
+    # print('Computing basin labels')
     design$height <- less$height
     design$decSpaceLabels <- getBasinLabels(design$efficientSets, design$height, grid_size, nDim)
   } else {
@@ -118,7 +117,7 @@ evalutate_results = function(results, fn, ...,
 
   list_it <- split(results, factor(results[[1]]))
   boundaries <- c(rbind(getLowerBoxConstraints(fn), getUpperBoxConstraints(fn)))
-  print('Evaluating per basin')
+  cat('Evaluating per basin ...\n')
   res_per_basin <- lapply(list_it, function(df_part) {
     points <- df_part[, 2:3]
     filterres <- filterByBasin(points, design$decSpaceLabels, boundaries, length(design$efficientSets), grid_size, nDim)

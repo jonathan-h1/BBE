@@ -4,7 +4,15 @@
 \alias{getEfficientSets}
 \title{For a vector of indices with efficient points within a grid identify efficient sets.}
 \usage{
-getEfficientSets(efficientPoints, gridSize, nDim)
+getEfficientSets(
+  efficientPoints,
+  gridSize,
+  nDim,
+  domSort = FALSE,
+  rank = as.numeric(c()),
+  nRank = 0L,
+  joinFronts = FALSE
+)
 }
 \arguments{
 \item{efficientPoints}{The vector containing the indices of all efficient points.}

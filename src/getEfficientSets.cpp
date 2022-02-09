@@ -97,6 +97,9 @@ List getEfficientSets(
   int unhandeledPt = 0;
   NumericVector efficientSet;
 
+  Rcout << "Computing efficient sets ... \n";
+  // Rcout << "nPoints = " << nPoints << " nIndividualRanks = " << rank.size() << std::endl;
+
   long rem;
   for(int i = 0; i < nPoints; i++){
     rem = (long) efficientPoints(i) - 1;
@@ -134,16 +137,14 @@ List getEfficientSets(
   std::vector< std::vector<int> > effSetRanks(nEffSets, std::vector<int>(nRank, 0));
 
   if(domSort){
+    // Rcout << "Dom Sort: neffSets = " << nEffSets << std::endl;
     tmpEfficientSets = efficientSets;
     efficientSets = List::create();
     for(int i = 0; i < nEffSets; i++){
-      // Rcout << i << ": ";
       NumericVector effPoints = tmpEfficientSets(i);
       for(auto effPoint : effPoints){
         effSetRanks.at(i).at(rank(effPoint) - 1)++;
-        // Rcout << rank[effPoint] << ", ";
       }
-      // Rcout << "\n";
       sortVec.at(i) = i;
     }
 
@@ -152,15 +153,14 @@ List getEfficientSets(
 
     if(!joinFronts){
       for(int i: sortVec){
-        // Rcout << i << ", ";
         efficientSets.push_back(tmpEfficientSets(i));
       }
-      // Rcout << std::endl;
     }
 
   }
 
   if(joinFronts && domSort){
+    // Rcout << "Join Fronts" << std::endl;
     efficientSets = List::create();
     int currentLayer = 0;
     int start = 0;
@@ -192,11 +192,9 @@ List getEfficientSets(
   }
 
   for(int i = 0; i < efficientSets.size(); i++){
-    // Rcout << i << ": ";
     NumericVector effPoints = efficientSets(i);
     for(int j = 0; j < effPoints.length(); j++){
       effPoints(j) = efficientPoints(effPoints(j));
-      // Rcout << rank[effPoint] << ", ";
     }
   }
 
