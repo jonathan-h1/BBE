@@ -92,12 +92,12 @@ evalutate_results = function(results, fn, ...,
   }
 
   design <- moPLOT::generateDesign(fn, points.per.dimension = grid_size)
-  design$obj.space <- calculateObjectiveValues(design$dec.space, fn)
+  design$obj.space <- moPLOT::calculateObjectiveValues(design$dec.space, fn)
 
   if(is.null(dec_space_labels)){
-    gradients <- computeGradientFieldGrid(design)
-    divergence <- computeDivergenceGrid(gradients$multi.objective, design$dims, design$step.sizes)
-    less <- localEfficientSetSkeleton(design, gradients, divergence, integration = "fast")
+    gradients <- moPLOT::computeGradientFieldGrid(design)
+    divergence <- moPLOT::computeDivergenceGrid(gradients$multi.objective, design$dims, design$step.sizes)
+    less <- moPLOT::localEfficientSetSkeleton(design, gradients, divergence, integration = "fast")
 
     if(is.null(efficient_sets)){
       # print('Computing efficient sets')
@@ -108,9 +108,8 @@ evalutate_results = function(results, fn, ...,
     } else {
       design$efficientSets <- efficient_sets
     }
-    # print('Computing basin labels')
-    design$height <- less$height
-    design$decSpaceLabels <- getBasinLabels(design$efficientSets, design$height, grid_size, nDim)
+    cumPathlength <- moPLOT::computeCumulatedPathLengths(design$dec.space, gradients$multi.objective, less$sinks)
+    design$decSpaceLabels <- getBasinLabelsCPP(design$efficientSets, cumPathlength$last.visited)
   } else {
     design$decSpaceLabels <- dec_space_labels
   }
@@ -120,8 +119,7 @@ evalutate_results = function(results, fn, ...,
   cat('Evaluating per basin ...\n')
   res_per_basin <- lapply(list_it, function(df_part) {
     points <- df_part[, 2:3]
-    filterres <- filterByBasin(points, design$decSpaceLabels, boundaries, length(design$efficientSets), grid_size, nDim)
-    points$labels = filterres
+    points$labels <- filterByBasin(points, design$decSpaceLabels, boundaries, grid_size, nDim)
 
     perf_vals <- sapply(basins, function(x){
       basin_points <- df_part[points$labels == x, ]

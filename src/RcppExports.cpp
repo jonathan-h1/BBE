@@ -11,18 +11,29 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // filterByBasin
-NumericVector filterByBasin(DataFrame solutions, NumericVector basinLabels, NumericVector boudaries, int nBasins, int gridSize, int nDim);
-RcppExport SEXP _ABSE_filterByBasin(SEXP solutionsSEXP, SEXP basinLabelsSEXP, SEXP boudariesSEXP, SEXP nBasinsSEXP, SEXP gridSizeSEXP, SEXP nDimSEXP) {
+NumericVector filterByBasin(DataFrame solutions, NumericVector basinLabels, NumericVector boudaries, int gridSize, int nDim);
+RcppExport SEXP _ABSE_filterByBasin(SEXP solutionsSEXP, SEXP basinLabelsSEXP, SEXP boudariesSEXP, SEXP gridSizeSEXP, SEXP nDimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< DataFrame >::type solutions(solutionsSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type basinLabels(basinLabelsSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type boudaries(boudariesSEXP);
-    Rcpp::traits::input_parameter< int >::type nBasins(nBasinsSEXP);
     Rcpp::traits::input_parameter< int >::type gridSize(gridSizeSEXP);
     Rcpp::traits::input_parameter< int >::type nDim(nDimSEXP);
-    rcpp_result_gen = Rcpp::wrap(filterByBasin(solutions, basinLabels, boudaries, nBasins, gridSize, nDim));
+    rcpp_result_gen = Rcpp::wrap(filterByBasin(solutions, basinLabels, boudaries, gridSize, nDim));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getBasinLabelsCPP
+NumericVector getBasinLabelsCPP(List efficientSets, NumericVector lastVisited);
+RcppExport SEXP _ABSE_getBasinLabelsCPP(SEXP efficientSetsSEXP, SEXP lastVisitedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type efficientSets(efficientSetsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lastVisited(lastVisitedSEXP);
+    rcpp_result_gen = Rcpp::wrap(getBasinLabelsCPP(efficientSets, lastVisited));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -59,7 +70,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_ABSE_filterByBasin", (DL_FUNC) &_ABSE_filterByBasin, 6},
+    {"_ABSE_filterByBasin", (DL_FUNC) &_ABSE_filterByBasin, 5},
+    {"_ABSE_getBasinLabelsCPP", (DL_FUNC) &_ABSE_getBasinLabelsCPP, 2},
     {"_ABSE_getBasinLabels", (DL_FUNC) &_ABSE_getBasinLabels, 4},
     {"_ABSE_getEfficientSets", (DL_FUNC) &_ABSE_getEfficientSets, 7},
     {NULL, NULL, 0}

@@ -16,17 +16,15 @@ using namespace Rcpp;
 //' @param nDim The number of dimensions in the decision space.
 // [[Rcpp::export]]
 NumericVector filterByBasin(DataFrame solutions, NumericVector basinLabels, NumericVector boudaries,
-                   int nBasins, int gridSize, int nDim){
+                            int gridSize, int nDim){
 
   int nSolutions = solutions.nrow();
   NumericVector solutionLabels(nSolutions);
-  // for(int i = 0; i < nBasins; i++){
-  //   filteredSolutions.push_back(NumericVector::create());
-  // }
   NumericVector dimVals;
   int label;
   std::vector<double> minAndStep;
   minAndStep.reserve(nDim * 2);
+
   for (int dim = 0; dim < nDim; ++dim)
   {
     minAndStep.push_back((double) boudaries(dim * 2));
@@ -52,6 +50,7 @@ NumericVector filterByBasin(DataFrame solutions, NumericVector basinLabels, Nume
     // std::cout<<"Label: "<<label<<std::endl;
     solutionLabels(i) = label;
   }
+
   return solutionLabels;
 }
 

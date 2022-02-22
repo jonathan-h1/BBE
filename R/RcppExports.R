@@ -9,9 +9,8 @@
 #' @param nBasins The number of unique labels in [`basinLabels`].
 #' @param gridSize The side length of the grid.
 #' @param nDim The number of dimensions in the decision space.
-#' @export
-filterByBasin <- function(solutions, basinLabels, boudaries, nBasins, gridSize, nDim) {
-    .Call(`_ABSE_filterByBasin`, solutions, basinLabels, boudaries, nBasins, gridSize, nDim)
+filterByBasin <- function(solutions, basinLabels, boudaries, gridSize, nDim) {
+    .Call(`_ABSE_filterByBasin`, solutions, basinLabels, boudaries, gridSize, nDim)
 }
 
 #' Identify for every point in the rasterised decision space the corresponding basin it belongs to.
@@ -20,7 +19,16 @@ filterByBasin <- function(solutions, basinLabels, boudaries, nBasins, gridSize, 
 #' @param gradients A vector containing the accumulated gradients for every point in the grid.
 #' @param gridSize The side length of the grid.
 #' @param nDim The number of dimensions in the decision space.
-#' @export
+getBasinLabelsCPP <- function(efficientSets, lastVisited) {
+    .Call(`_ABSE_getBasinLabelsCPP`, efficientSets, lastVisited)
+}
+
+#' Identify for every point in the rasterised decision space the corresponding basin it belongs to.
+#'
+#' @param efficientSets A list containing for every efficient set the indices of all efficient points.
+#' @param gradients A vector containing the accumulated gradients for every point in the grid.
+#' @param gridSize The side length of the grid.
+#' @param nDim The number of dimensions in the decision space.
 getBasinLabels <- function(efficientSets, gradients, gridSize, nDim) {
     .Call(`_ABSE_getBasinLabels`, efficientSets, gradients, gridSize, nDim)
 }
@@ -30,8 +38,7 @@ getBasinLabels <- function(efficientSets, gradients, gridSize, nDim) {
 #' @param efficientPoints The vector containing the indices of all efficient points.
 #' @param gridSize The side length of the grid.
 #' @param nDim The number of dimensions in the decision space.
-#' @export
-getEfficientSets <- function(efficientPoints, gridSize, nDim, domSort = FALSE, rank = as.numeric( c()), nRank = 0L) {
-    .Call(`_ABSE_getEfficientSets`, efficientPoints, gridSize, nDim, domSort, rank, nRank)
+getEfficientSets <- function(efficientPoints, gridSize, nDim, domSort = FALSE, rank = as.numeric( c()), nRank = 0L, joinFronts = FALSE) {
+    .Call(`_ABSE_getEfficientSets`, efficientPoints, gridSize, nDim, domSort, rank, nRank, joinFronts)
 }
 
