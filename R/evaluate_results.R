@@ -67,6 +67,7 @@ evalutate_results = function(results, fn, ...,
                              grid_size = 300L,
                              basins = 1:3,
                              join_fronts = FALSE,
+                             keep_points = FALSE,
                              efficient_sets = NULL,
                              dec_space_labels = NULL){
 
@@ -114,7 +115,14 @@ evalutate_results = function(results, fn, ...,
     design$decSpaceLabels <- dec_space_labels
   }
 
-  list_it <- split(results, factor(results[[1]]))
+  if(keep_points){
+    list_it <- lapply(unique(results[[1]]), function(x) {
+      return(results[results[[1]] <= x, ])
+    })
+  } else  {
+    list_it <- split(results, factor(results[[1]]))
+  }
+
   boundaries <- c(rbind(getLowerBoxConstraints(fn), getUpperBoxConstraints(fn)))
   cat('Evaluating per basin ...\n')
   res_per_basin <- lapply(list_it, function(df_part) {
@@ -135,12 +143,29 @@ evalutate_results = function(results, fn, ...,
     mean_val = mean(perf_vals)
 
     return(data.frame(
-      fun_calls = df_part$fun_calls[1],
+      fun_calls = df_part$fun_calls[nrow(df_part)],
       t(perf_vals),
       mean_value = mean_val
     ))
   })
 
-  design$basin_separated_eval <- as_tibble(do.call("rbind", res_per_basin))
+  design$basin_separated_eval <- tibble::as_tibble(do.call("rbind", res_per_basin))
+  auc <- design$basin_separated_eval %>%
+    mutate(max_hv_mean = pmax(mean_value, c(0, mean_value)[1:nrow(design$basin_separated_eval)]),
+           min_hv_mean = pmin(mean_value, c(0, mean_value)[1:nrow(design$basin_separated_eval)]),
+           max_hv1 = pmax(value_basin1, c(0, value_basin1)[1:nrow(design$basin_separated_eval)]),
+           min_hv1 = pmin(value_basin1, c(0, value_basin1)[1:nrow(design$basin_separated_eval)]),
+           fn_calls_diff = fun_calls - c(0, fun_calls)[1:nrow(design$basin_separated_eval)]) %>%
+    transmute(auc_hv_mean = cumsum(fn_calls_diff * (min_hv_mean + (max_hv_mean - min_hv_mean) / 2)),
+              auc_hv1 = cumsum(fn_calls_diff * (min_hv1 + (max_hv1 - min_hv1) / 2)))
+
+  # fn_calls = c(1, 3, 4, 5, 7)
+  # hv_mean = c(2,4,5,4,2)
+  # hv1 = c(5, 2, 2, 2, 4)
+  # design = list(basin_separated_eval = tibble(fun_calls = fn_calls, mean_value = hv_mean, value_basin1 = hv1))
+
+
+  design$basin_separated_eval <- cbind(design$basin_separated_eval, auc)
+
   return(design)
 }
