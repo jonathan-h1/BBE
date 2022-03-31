@@ -126,7 +126,8 @@ evalutate_results = function(results, fn, ...,
   boundaries <- c(rbind(getLowerBoxConstraints(fn), getUpperBoxConstraints(fn)))
   cat('Evaluating per basin ...\n')
   res_per_basin <- lapply(list_it, function(df_part) {
-    points <- df_part[, 2:1 + nDim]
+    # points <- df_part[, 2:1 + nDim]
+    points <- select(df_part, paste0("x",c(1:nDim))) # Enforce right selection of columns
     points$labels <- filterByBasin(points, design$decSpaceLabels, boundaries, grid_size, nDim)
 
     perf_vals <- sapply(basins, function(x){
