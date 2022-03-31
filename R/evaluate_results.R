@@ -74,7 +74,7 @@ evalutate_results = function(results, fn, ...,
   assert_data_frame(results, types = c('numeric'), min.cols = 5)
   assert_function(fn)
   assert_function(eval_fn)
-  assert_class(fn, c('smoof_function', 'smoof_multi_objective_function'))
+  assert_class(fn, c('smoof_function')) #, 'smoof_multi_objective_function' # wrappers and loggers remove this class...
   if(identical(ecr::computeHV, eval_fn)){
     arguments <- list(...)
     assert('ref.point' %in% names(arguments), .var.name = 'ref.point')
@@ -93,7 +93,7 @@ evalutate_results = function(results, fn, ...,
   }
 
   design <- moPLOT::generateDesign(fn, points.per.dimension = grid_size)
-  design$obj.space <- moPLOT::calculateObjectiveValues(design$dec.space, fn)
+  design$obj.space <- moPLOT::calculateObjectiveValues(design$dec.space, fn, vectorized.evaluation=FALSE)
 
   if(is.null(dec_space_labels)){
     gradients <- moPLOT::computeGradientFieldGrid(design)
@@ -126,7 +126,7 @@ evalutate_results = function(results, fn, ...,
   boundaries <- c(rbind(getLowerBoxConstraints(fn), getUpperBoxConstraints(fn)))
   cat('Evaluating per basin ...\n')
   res_per_basin <- lapply(list_it, function(df_part) {
-    points <- df_part[, 2:3]
+    points <- df_part[, 2:1 + nDim]
     points$labels <- filterByBasin(points, design$decSpaceLabels, boundaries, grid_size, nDim)
 
     perf_vals <- sapply(basins, function(x){
