@@ -69,7 +69,8 @@ evalutate_results = function(results, fn, ...,
                              join_fronts = FALSE,
                              keep_points = FALSE,
                              efficient_sets = NULL,
-                             dec_space_labels = NULL){
+                             dec_space_labels = NULL,
+                             design = NULL){
 
   assert_data_frame(results, types = c('numeric'), min.cols = 5)
   assert_function(fn)
@@ -92,8 +93,10 @@ evalutate_results = function(results, fn, ...,
     assert_list(efficient_sets, min.len = 1, any.missing = FALSE)
   }
 
-  design <- moPLOT::generateDesign(fn, points.per.dimension = grid_size)
-  design$obj.space <- moPLOT::calculateObjectiveValues(design$dec.space, fn, vectorized.evaluation=FALSE)
+  if(is.null(design)){
+    design <- moPLOT::generateDesign(fn, points.per.dimension = grid_size)
+    design$obj.space <- moPLOT::calculateObjectiveValues(design$dec.space, fn, vectorized.evaluation=FALSE)
+  }
 
   if(is.null(dec_space_labels)){
     gradients <- moPLOT::computeGradientFieldGrid(design)
