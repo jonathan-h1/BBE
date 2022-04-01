@@ -95,7 +95,7 @@ evalutate_results = function(results, fn, ...,
 
   if(is.null(design)){
     design <- moPLOT::generateDesign(fn, points.per.dimension = grid_size)
-    design$obj.space <- moPLOT::calculateObjectiveValues(design$dec.space, fn, vectorized.evaluation=FALSE)
+    design$obj.space <- moPLOT::calculateObjectiveValues(design$dec.space, fn)
   }
 
   if(is.null(dec_space_labels)){
