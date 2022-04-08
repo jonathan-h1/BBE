@@ -189,6 +189,15 @@ List getEfficientSets(
         efficientSets.push_back(efficientSet);
       }
     }
+    std::vector<int> joinedVec;
+    joinedVec.reserve((int) ((nPoints / nEffSets) * 2 * front.size()));
+    for(int i : front){
+      efficientSet = tmpEfficientSets(i);
+      joinedVec.insert(joinedVec.begin(), efficientSet.begin(), efficientSet.end());
+    }
+    front.clear();
+    efficientSet.assign(joinedVec.begin(), joinedVec.end());
+    efficientSets.push_back(efficientSet);
   }
 
   for(int i = 0; i < efficientSets.size(); i++){

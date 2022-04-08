@@ -31,14 +31,14 @@ get_decision_space_labels = function(fn,
                              join_fronts = FALSE,
                              efficient_sets = NULL){
 
-  assert_function(fn)
-  assert_class(fn, c('smoof_function', 'smoof_multi_objective_function'))
+  checkmate::assert_function(fn)
+  checkmate::assert_class(fn, c('smoof_function', 'smoof_multi_objective_function'))
 
   nDim <- as.integer(smoof::getNumberOfParameters(fn))
   nDimObj <- as.integer(smoof::getNumberOfObjectives(fn))
 
   if(!is.null(efficient_sets)){
-    assert_list(efficient_sets, min.len = 1, any.missing = FALSE)
+    checkmate::assert_list(efficient_sets, min.len = 1, any.missing = FALSE)
   }
 
   design <- moPLOT::generateDesign(fn, points.per.dimension = grid_size)
@@ -52,7 +52,7 @@ get_decision_space_labels = function(fn,
   if(is.null(efficient_sets)){
     # print('Computing efficient sets')
     nonDomSort <- ecr::doNondominatedSorting(t(design$obj.space[less$sinks, ]))
-    design$efficientSets <- getEfficientSets(less$sinks, grid_size, nDim,
+    design$efficientSets <- ABSE:::getEfficientSets(less$sinks, grid_size, nDim,
                                              domSort = TRUE, nonDomSort$ranks, length(unique(nonDomSort$ranks)),
                                              joinFronts = join_fronts)
   } else {

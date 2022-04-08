@@ -62,35 +62,35 @@
 #' evalutate_results(tb, fn, ref.point = smoof::getRefPoint(fn))
 #' # }
 #' @export
-evalutate_results = function(results, fn, ...,
-                             eval_fn = ecr::computeHV,
-                             grid_size = 300L,
-                             basins = 1:3,
-                             join_fronts = FALSE,
-                             keep_points = FALSE,
-                             efficient_sets = NULL,
-                             dec_space_labels = NULL,
-                             design = NULL){
+evaluate_results = function(results, fn, ...,
+                            eval_fn = ecr::computeHV,
+                            grid_size = 300L,
+                            basins = 1:3,
+                            join_fronts = FALSE,
+                            keep_points = FALSE,
+                            efficient_sets = NULL,
+                            dec_space_labels = NULL,
+                            design = NULL){
 
-  assert_data_frame(results, types = c('numeric'), min.cols = 5)
-  assert_function(fn)
-  assert_function(eval_fn)
-  assert_class(fn, c('smoof_function')) #, 'smoof_multi_objective_function' # wrappers and loggers remove this class...
+  checkmate::assert_data_frame(results, types = c('numeric'), min.cols = 5)
+  checkmate::assert_function(fn)
+  checkmate::assert_function(eval_fn)
+  checkmate::assert_class(fn, c('smoof_function')) #, 'smoof_multi_objective_function' # wrappers and loggers remove this class...
   if(identical(ecr::computeHV, eval_fn)){
     arguments <- list(...)
-    assert('ref.point' %in% names(arguments), .var.name = 'ref.point')
+    checkmate::assert('ref.point' %in% names(arguments), .var.name = 'ref.point')
   }
-  assert_atomic_vector(basins, any.missing = FALSE, min.len = 1, unique = TRUE)
+  checkmate::assert_atomic_vector(basins, any.missing = FALSE, min.len = 1, unique = TRUE)
 
   nDim <- as.integer(smoof::getNumberOfParameters(fn))
   nDimObj <- as.integer(smoof::getNumberOfObjectives(fn))
 
   if(!is.null(dec_space_labels)){
-    assert_atomic_vector(dec_space_labels, len = grid_size ** nDim, any.missing = FALSE)
+    checkmate::assert_atomic_vector(dec_space_labels, len = grid_size ** nDim, any.missing = FALSE)
   }
 
   if(!is.null(efficient_sets)){
-    assert_list(efficient_sets, min.len = 1, any.missing = FALSE)
+    checkmate::assert_list(efficient_sets, min.len = 1, any.missing = FALSE)
   }
 
   if(is.null(design)){
