@@ -44,7 +44,9 @@ less <<- localEfficientSetSkeleton(design, gradients, divergence, integration="f
 
 
 test_that("efficient sets are identified with efficient points", {
-  expect_equal(getEfficientSets(c(1,2,3,11,13,15, 16,27,38,49,59,69), 10L, 2L),
+  expect_equal(getEfficientSets(c(1,2,3,11,13,15, 16,27,38,49,59,69), 10L, 2L,
+                                domSort = TRUE,
+                                rank = c(1,1,1,1,2,1,1,2,2,2,2,1), nRank = 2),
                list(c(1,2,11,3,13), c(15, 16,27,38,49,59,69)))
   expect_snapshot_value(getEfficientSets(less$sinks, 300L, 2L), style = 'json2')
 })

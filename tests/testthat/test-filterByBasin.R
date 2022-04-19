@@ -6,5 +6,5 @@ labels <- c(1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2)
 
 
 test_that("the right labels are found for a set of solutions", {
-  expect_equal(filterByBasin(data, labels, bounds, 2,4,2)[[3]], c(2,1,1,2))
+  expect_equal(filterByBasin(data, labels, bounds, 4,2), c(2,1,1,2))
 })

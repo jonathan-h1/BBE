@@ -34,21 +34,25 @@ makeAsparFunction <- function(dimensions = 2, n.objectives = 2) {
 #### end Aspar ####
 
 fn <- makeAsparFunction()
+grid_size =  300
+nDim = 2
 
-design <- moPLOT::generateDesign(fn, points.per.dimension = 300)
-design$obj.space <- calculateObjectiveValues(design$dec.space, fn, parallelize = F)
+design <- moPLOT::generateDesign(fn, points.per.dimension = grid_size)
+design$obj.space <- moPLOT::calculateObjectiveValues(design$dec.space, fn)
 
-gradients <- computeGradientFieldGrid(design)
-divergence <- computeDivergenceGrid(gradients$multi.objective, design$dims, design$step.sizes)
-less <<- localEfficientSetSkeleton(design, gradients, divergence, integration="fast")
 
-sets_aspar <- getEfficientSets(less$sinks, 300L, 2L)
+gradients <- moPLOT::computeGradientFieldGrid(design)
+divergence <- moPLOT::computeDivergenceGrid(gradients$multi.objective, design$dims, design$step.sizes)
+less <- moPLOT::localEfficientSetSkeleton(design, gradients, divergence, integration = "fast")
 
-sets_simple <- getEfficientSets(c(0, 1, 2, 10, 13), 4, 2)
+
+nonDomSort <- ecr::doNondominatedSorting(t(design$obj.space[less$sinks, ]))
+design$efficientSets <- getEfficientSets(less$sinks, grid_size, nDim,
+                                         domSort = TRUE, nonDomSort$ranks, length(unique(nonDomSort$ranks)))
+
+cumPathlength <- moPLOT::computeCumulatedPathLengths(design$dec.space, gradients$multi.objective, less$sinks)
 
 
 test_that("getBasinLabels returns the correct labels", {
-  expect_equal(getBasinLabels(sets_simple, c(0,0,0,1,1,1,1,0.5,1.1,0.5,0,0.1,0.5,0,0.1,0.2), 4, 2),
-               c(1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2))
-  expect_snapshot_value(getBasinLabels(sets_aspar, as.vector(less$height), 300, 2), style = 'json2')
+  expect_snapshot_value(getBasinLabelsCPP(design$efficientSets, cumPathlength$last.visited), style = 'json2')
 })
