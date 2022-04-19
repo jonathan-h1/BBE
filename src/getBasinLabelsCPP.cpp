@@ -5,12 +5,12 @@
 #include <limits>
 using namespace Rcpp;
 
-//' Identify for every point in the rasterised decision space the corresponding basin it belongs to.
-//'
-//' @param efficientSets A list containing for every efficient set the indices of all efficient points.
-//' @param gradients A vector containing the accumulated gradients for every point in the grid.
-//' @param gridSize The side length of the grid.
-//' @param nDim The number of dimensions in the decision space.
+// Identify for every point in the rasterized decision space the corresponding basin it belongs to.
+//
+// @param efficientSets A list containing for every efficient set the indices of all efficient points.
+// @param gradients A vector containing the accumulated gradients for every point in the grid.
+// @param gridSize The side length of the grid.
+// @param nDim The number of dimensions in the decision space.
 // [[Rcpp::export]]
 NumericVector getBasinLabelsCPP(List efficientSets, NumericVector lastVisited){
 

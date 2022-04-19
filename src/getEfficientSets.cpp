@@ -20,15 +20,6 @@ struct domComp_t {
  int nRanks;
 };
 
-// This is a simple example of exporting a C++ function to R. You can
-// source this function into an R session using the Rcpp::sourceCpp
-// function (or via the Source button on the editor toolbar). Learn
-// more about Rcpp at:
-//
-//   http://www.rcpp.org/
-//   http://adv-r.had.co.nz/Rcpp.html
-//   http://gallery.rcpp.org/
-//
 int findUnhandeledPt(std::vector<int> handledPts, int start = 0){
   int nPoints = handledPts.size();
   int unhandeledPt = -1;
@@ -71,11 +62,11 @@ std::vector<int> findNeighbors(
   return neighbors;
 }
 
-//' For a vector of indices with efficient points within a grid identify efficient sets.
-//'
-//' @param efficientPoints The vector containing the indices of all efficient points.
-//' @param gridSize The side length of the grid.
-//' @param nDim The number of dimensions in the decision space.
+// For a vector of indices with efficient points within a grid identify efficient sets.
+//
+// @param efficientPoints The vector containing the indices of all efficient points.
+// @param gridSize The side length of the grid.
+// @param nDim The number of dimensions in the decision space.
 // [[Rcpp::export]]
 List getEfficientSets(
     NumericVector efficientPoints,

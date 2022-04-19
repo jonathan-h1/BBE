@@ -6,14 +6,14 @@ using namespace Rcpp;
 
 
 
-//' Group a set of points by the label of the region in the rasterized decision space htey lie in.
-//'
-//' @param solutions A data frame with one column per dimension.
-//' @param basinLabels A vector containing the labels of all regions as retrieved from getBasinLabels.
-//' @param boundaries A vector containing the minimal and maximal possible values per dimension.
-//' @param nBasins The number of unique labels in [`basinLabels`].
-//' @param gridSize The side length of the grid.
-//' @param nDim The number of dimensions in the decision space.
+// Group a set of points by the label of the region in the rasterized decision space they lie in.
+//
+// @param solutions A data frame with one column per dimension.
+// @param basinLabels A vector containing the labels of all regions as retrieved from getBasinLabels.
+// @param boundaries A vector containing the minimal and maximal possible values per dimension.
+// @param nBasins The number of unique labels in [`basinLabels`].
+// @param gridSize The side length of the grid.
+// @param nDim The number of dimensions in the decision space.
 // [[Rcpp::export]]
 NumericVector filterByBasin(DataFrame solutions, NumericVector basinLabels, NumericVector boudaries,
                             int gridSize, int nDim){

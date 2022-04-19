@@ -37,20 +37,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// getBasinLabels
-NumericVector getBasinLabels(List efficientSets, NumericVector gradients, int gridSize, int nDim);
-RcppExport SEXP _bbe_getBasinLabels(SEXP efficientSetsSEXP, SEXP gradientsSEXP, SEXP gridSizeSEXP, SEXP nDimSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type efficientSets(efficientSetsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type gradients(gradientsSEXP);
-    Rcpp::traits::input_parameter< int >::type gridSize(gridSizeSEXP);
-    Rcpp::traits::input_parameter< int >::type nDim(nDimSEXP);
-    rcpp_result_gen = Rcpp::wrap(getBasinLabels(efficientSets, gradients, gridSize, nDim));
-    return rcpp_result_gen;
-END_RCPP
-}
 // getEfficientSets
 List getEfficientSets(NumericVector efficientPoints, int gridSize, int nDim, bool domSort, NumericVector rank, int nRank, bool joinFronts);
 RcppExport SEXP _bbe_getEfficientSets(SEXP efficientPointsSEXP, SEXP gridSizeSEXP, SEXP nDimSEXP, SEXP domSortSEXP, SEXP rankSEXP, SEXP nRankSEXP, SEXP joinFrontsSEXP) {
@@ -72,7 +58,6 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_bbe_filterByBasin", (DL_FUNC) &_bbe_filterByBasin, 5},
     {"_bbe_getBasinLabelsCPP", (DL_FUNC) &_bbe_getBasinLabelsCPP, 2},
-    {"_bbe_getBasinLabels", (DL_FUNC) &_bbe_getBasinLabels, 4},
     {"_bbe_getEfficientSets", (DL_FUNC) &_bbe_getEfficientSets, 7},
     {NULL, NULL, 0}
 };

@@ -8,6 +8,14 @@
 \description{
 This package provides a customizable method for the basin-based evaluation of multiobjective optimization algorithm runs focusing on multimodality. The main idea is that the decision space is partitioned in basins which are evaluated separately with a user-defined function.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/jonathan-h1/BBE}
+  \item Report bugs at \url{https://github.com/jonathan-h1/BBE/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Jonathan Heins \email{jonathan.heins@tu-dresden.de} (\href{https://orcid.org/0000-0002-3571-667X}{ORCID})
 
