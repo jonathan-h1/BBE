@@ -1,4 +1,4 @@
 library(testthat)
-library(ABSE)
+library(bbe)
 
-test_check("ABSE")
+test_check("bbe")

@@ -1,4 +1,4 @@
-library(ABSE)
+library(bbe)
 
 data <- data.frame(x = c(1.5, 5.5, 7.9, 10.0), y=c(15, 9, 4, 20))
 bounds <- c(0.0, 10.0, 0.0, 20.0)

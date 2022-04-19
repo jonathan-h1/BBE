@@ -52,7 +52,7 @@ get_decision_space_labels = function(fn,
   if(is.null(efficient_sets)){
     # print('Computing efficient sets')
     nonDomSort <- ecr::doNondominatedSorting(t(design$obj.space[less$sinks, ]))
-    design$efficientSets <- ABSE:::getEfficientSets(less$sinks, grid_size, nDim,
+    design$efficientSets <- getEfficientSets(less$sinks, grid_size, nDim,
                                              domSort = TRUE, nonDomSort$ranks, length(unique(nonDomSort$ranks)),
                                              joinFronts = join_fronts)
   } else {

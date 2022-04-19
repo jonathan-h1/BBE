@@ -1,4 +1,4 @@
-library(ABSE)
+library(bbe)
 library(moPLOT)
 library(tidyverse)
 library(smoof)

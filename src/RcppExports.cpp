@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // filterByBasin
 NumericVector filterByBasin(DataFrame solutions, NumericVector basinLabels, NumericVector boudaries, int gridSize, int nDim);
-RcppExport SEXP _ABSE_filterByBasin(SEXP solutionsSEXP, SEXP basinLabelsSEXP, SEXP boudariesSEXP, SEXP gridSizeSEXP, SEXP nDimSEXP) {
+RcppExport SEXP _bbe_filterByBasin(SEXP solutionsSEXP, SEXP basinLabelsSEXP, SEXP boudariesSEXP, SEXP gridSizeSEXP, SEXP nDimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -27,7 +27,7 @@ END_RCPP
 }
 // getBasinLabelsCPP
 NumericVector getBasinLabelsCPP(List efficientSets, NumericVector lastVisited);
-RcppExport SEXP _ABSE_getBasinLabelsCPP(SEXP efficientSetsSEXP, SEXP lastVisitedSEXP) {
+RcppExport SEXP _bbe_getBasinLabelsCPP(SEXP efficientSetsSEXP, SEXP lastVisitedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -39,7 +39,7 @@ END_RCPP
 }
 // getBasinLabels
 NumericVector getBasinLabels(List efficientSets, NumericVector gradients, int gridSize, int nDim);
-RcppExport SEXP _ABSE_getBasinLabels(SEXP efficientSetsSEXP, SEXP gradientsSEXP, SEXP gridSizeSEXP, SEXP nDimSEXP) {
+RcppExport SEXP _bbe_getBasinLabels(SEXP efficientSetsSEXP, SEXP gradientsSEXP, SEXP gridSizeSEXP, SEXP nDimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -53,7 +53,7 @@ END_RCPP
 }
 // getEfficientSets
 List getEfficientSets(NumericVector efficientPoints, int gridSize, int nDim, bool domSort, NumericVector rank, int nRank, bool joinFronts);
-RcppExport SEXP _ABSE_getEfficientSets(SEXP efficientPointsSEXP, SEXP gridSizeSEXP, SEXP nDimSEXP, SEXP domSortSEXP, SEXP rankSEXP, SEXP nRankSEXP, SEXP joinFrontsSEXP) {
+RcppExport SEXP _bbe_getEfficientSets(SEXP efficientPointsSEXP, SEXP gridSizeSEXP, SEXP nDimSEXP, SEXP domSortSEXP, SEXP rankSEXP, SEXP nRankSEXP, SEXP joinFrontsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -70,14 +70,14 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_ABSE_filterByBasin", (DL_FUNC) &_ABSE_filterByBasin, 5},
-    {"_ABSE_getBasinLabelsCPP", (DL_FUNC) &_ABSE_getBasinLabelsCPP, 2},
-    {"_ABSE_getBasinLabels", (DL_FUNC) &_ABSE_getBasinLabels, 4},
-    {"_ABSE_getEfficientSets", (DL_FUNC) &_ABSE_getEfficientSets, 7},
+    {"_bbe_filterByBasin", (DL_FUNC) &_bbe_filterByBasin, 5},
+    {"_bbe_getBasinLabelsCPP", (DL_FUNC) &_bbe_getBasinLabelsCPP, 2},
+    {"_bbe_getBasinLabels", (DL_FUNC) &_bbe_getBasinLabels, 4},
+    {"_bbe_getEfficientSets", (DL_FUNC) &_bbe_getEfficientSets, 7},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_ABSE(DllInfo *dll) {
+RcppExport void R_init_bbe(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

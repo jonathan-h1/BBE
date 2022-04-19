@@ -1,12 +1,17 @@
-Package: ABSE
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Package: bbe
+Title: Basin-Based Evaluation (BBE) of Multiobjective Optimization Algorithm Runs
+Version: 0.1.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Jonathan", "Heins", , "jonathan.heins@tu-dresden.de", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-3571-667X"))
+Description: This package provides a customizable method for the basin-based evaluation
+    of multiobjective optimization algorithm runs focusing on multimodality. 
+    The main idea is that the decision space is partitioned in basins 
+    which are evaluated separately with a user-defined function.
+Maintainer: Jonathan Heins <jonathan.heins@tu-dresden.de>
+URL: https://github.com/jonathan-h1/BBE
+BugReports: https://github.com/jonathan-h1/BBE/issues
+License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2

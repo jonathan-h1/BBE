@@ -10,7 +10,7 @@
 #' @param gridSize The side length of the grid.
 #' @param nDim The number of dimensions in the decision space.
 filterByBasin <- function(solutions, basinLabels, boudaries, gridSize, nDim) {
-    .Call(`_ABSE_filterByBasin`, solutions, basinLabels, boudaries, gridSize, nDim)
+    .Call(`_bbe_filterByBasin`, solutions, basinLabels, boudaries, gridSize, nDim)
 }
 
 #' Identify for every point in the rasterised decision space the corresponding basin it belongs to.
@@ -20,7 +20,7 @@ filterByBasin <- function(solutions, basinLabels, boudaries, gridSize, nDim) {
 #' @param gridSize The side length of the grid.
 #' @param nDim The number of dimensions in the decision space.
 getBasinLabelsCPP <- function(efficientSets, lastVisited) {
-    .Call(`_ABSE_getBasinLabelsCPP`, efficientSets, lastVisited)
+    .Call(`_bbe_getBasinLabelsCPP`, efficientSets, lastVisited)
 }
 
 #' Identify for every point in the rasterised decision space the corresponding basin it belongs to.
@@ -30,7 +30,7 @@ getBasinLabelsCPP <- function(efficientSets, lastVisited) {
 #' @param gridSize The side length of the grid.
 #' @param nDim The number of dimensions in the decision space.
 getBasinLabels <- function(efficientSets, gradients, gridSize, nDim) {
-    .Call(`_ABSE_getBasinLabels`, efficientSets, gradients, gridSize, nDim)
+    .Call(`_bbe_getBasinLabels`, efficientSets, gradients, gridSize, nDim)
 }
 
 #' For a vector of indices with efficient points within a grid identify efficient sets.
@@ -39,6 +39,6 @@ getBasinLabels <- function(efficientSets, gradients, gridSize, nDim) {
 #' @param gridSize The side length of the grid.
 #' @param nDim The number of dimensions in the decision space.
 getEfficientSets <- function(efficientPoints, gridSize, nDim, domSort = FALSE, rank = as.numeric( c()), nRank = 0L, joinFronts = FALSE) {
-    .Call(`_ABSE_getEfficientSets`, efficientPoints, gridSize, nDim, domSort, rank, nRank, joinFronts)
+    .Call(`_bbe_getEfficientSets`, efficientPoints, gridSize, nDim, domSort, rank, nRank, joinFronts)
 }
 
